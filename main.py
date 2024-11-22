@@ -1,9 +1,9 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI
-from pydantic import BaseModel
 from contextlib import asynccontextmanager
 
 from database import create_tables, delete_tables
+from schemas import BookAdd
 
 
 @asynccontextmanager
@@ -17,16 +17,6 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-
-
-class BooksGet(BaseModel):
-    name: str
-    author: str
-    description: str | None
-
-
-class BookAdd(BooksGet):
-    id: int
 
 
 bookShelf = []
