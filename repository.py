@@ -1,28 +1,44 @@
+import logging
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
 from database import BookShelfOrm, new_session
 from schemas import BooksGet
+
+logging.basicConfig(level=logging.INFO)
 
 
 class BookRepository:
     @classmethod
     async def add_book(cls, data: BooksGet) -> int:
         async with new_session() as session:
-            book_dict = data.model_dump()  # вызываем метод, чтобы получить словарь
+            try:
+                book_dict = data.model_dump()  # Приводим полученные данные к типу - словарь
 
-            book = BookShelfOrm(**book_dict)  # создаем объект с помощью ОРМ из полученных данных
-            session.add(book)
-            await session.flush()
-            await session.commit()
-            return book.id
+                book = BookShelfOrm(**book_dict)  # Создаем объект с помощью ORM из полученных данных
+                session.add(book)  # Добавляем объект в сессию
+                await session.flush()  # Фиксируем изменения в сессии
+                await session.commit()  # Сохраняем изменения в базе данных
 
-    # async def delete_book(cls):
-    #     pass
+                logging.info(f"Книга добавлена: {book}")
+                return book.id  # Возвращаем ID добавленной книги
+
+            except SQLAlchemyError as e:
+                logging.error(f"Ошибка при добавлении книги: {e}")
+                await session.rollback()  # Откатываем изменения в случае ошибки
+                raise e
 
     @classmethod
     async def get_all_books(cls) -> list[BooksGet]:
         async with new_session() as session:
-            query = select(BookShelfOrm)
-            result = await session.execute(query)
-            book_models = result.scalars().all()  # используем scalars() для получения всех результатов
-            book_schemas = [BooksGet.model_validate(book_models) for books_model in book_schemas]
-            return book_schemas
+            try:
+                query = select(BookShelfOrm)  # Создаем запрос для выбора всех записей из таблицы BookShelfOrm
+                result = await session.execute(query)  # Выполняем запрос
+                book_models = result.scalars().all()  # Используем scalars() для получения всех результатов
+                book_schemas = [BooksGet.model_validate(book) for book in book_models]  # Преобразуем объекты ORM в схемы Pydantic
+
+                logging.info("Все книги получены")
+                return book_schemas  # Возвращаем список схем Pydantic
+
+            except SQLAlchemyError as e:
+                logging.error(f"Ошибка при получении книг: {e}")
+                raise e
