@@ -34,7 +34,7 @@ class BookRepository:
                 query = select(BookShelfOrm)  # Создаем запрос для выбора всех записей из таблицы BookShelfOrm
                 result = await session.execute(query)  # Выполняем запрос
                 book_models = result.scalars().all()  # Используем scalars() для получения всех результатов
-                book_schemas = [BooksGet.model_validate(book) for book in book_models]  # Преобразуем объекты ORM в схемы Pydantic
+                book_schemas = [BooksGet.model_validate(book.__dict__) for book in book_models]  # Преобразуем объекты ORM в схемы Pydantic
 
                 logging.info("Все книги получены")
                 return book_schemas  # Возвращаем список схем Pydantic
