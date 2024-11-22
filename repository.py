@@ -2,7 +2,7 @@ import logging
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from database import BookShelfOrm, new_session
-from schemas import BooksGet
+from schemas import BookAdd, BooksGet
 
 logging.basicConfig(level=logging.INFO)
 
@@ -28,13 +28,13 @@ class BookRepository:
                 raise e
 
     @classmethod
-    async def get_all_books(cls) -> list[BooksGet]:
+    async def get_all_books(cls) -> list[BookAdd]:
         async with new_session() as session:
             try:
                 query = select(BookShelfOrm)  # Создаем запрос для выбора всех записей из таблицы BookShelfOrm
                 result = await session.execute(query)  # Выполняем запрос
                 book_models = result.scalars().all()  # Используем scalars() для получения всех результатов
-                book_schemas = [BooksGet.model_validate(book.__dict__) for book in book_models]  # Преобразуем объекты ORM в схемы Pydantic
+                book_schemas = [BookAdd.model_validate(book.__dict__) for book in book_models]  # Преобразуем объекты ORM в схемы Pydantic
 
                 logging.info("Все книги получены")
                 return book_schemas  # Возвращаем список схем Pydantic
