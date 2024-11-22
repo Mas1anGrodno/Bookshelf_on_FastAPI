@@ -1,9 +1,18 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from database import create_tables, delete_tables
+from router import router as bookshelfRouter
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await delete_tables()
+    print("Дропаем базу базу")
+    await create_tables()
+    print("Стартуем базу")
+    yield
+    print("Тушим базу")
 
 
-@app.get("/home")
-def get_homepage():
-    return "fastapi is now working"
+app = FastAPI(lifespan=lifespan)
+app.include_router(bookshelfRouter)
