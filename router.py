@@ -1,18 +1,21 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
-from repository import bookRepository
-from schemas import BookAdd
+from repository import BookRepository
+from schemas import BookAdd, BookId, BooksGet
 
-router = APIRouter(prefix="/books")
+router = APIRouter(
+    prefix="/books",
+    tags=["Bookshelf"],
+)
 
 
 @router.post("")
-async def add_book(book: Annotated[BookAdd, Depends()]):
-    book_id = await bookRepository.add_book(book)
+async def add_book(book: Annotated[BooksGet, Depends()]) -> BookId:
+    book_id = await BookRepository.add_book(book)
     return {"book added": True, "book_id": book_id}
 
 
 @router.get("")
-async def get_book():
-    books = await bookRepository.get_all_book()
-    return {"books": books}
+async def get_book() -> list[BookAdd]:
+    books = await BookRepository.get_all_books()
+    return books

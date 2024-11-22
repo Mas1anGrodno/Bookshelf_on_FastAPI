@@ -1,3 +1,4 @@
+from typing import Optional
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -16,7 +17,7 @@ class BookShelfOrm(Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
     author: Mapped[str]
-    description: Mapped[str | None]  # str | None  == Optional [str]
+    description: Mapped[Optional[str]]  # str | None  == Optional [str]
 
 
 async def create_tables():

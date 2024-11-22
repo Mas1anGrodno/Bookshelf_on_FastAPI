@@ -1,8 +1,7 @@
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from contextlib import asynccontextmanager
-
 from database import create_tables, delete_tables
-from schemas import BookAdd
+from router import router as bookshelfRouter
 
 
 @asynccontextmanager
@@ -16,6 +15,4 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-
-
-bookShelf = []
+app.include_router(bookshelfRouter)
