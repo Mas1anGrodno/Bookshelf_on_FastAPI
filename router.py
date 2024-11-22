@@ -28,7 +28,7 @@ async def add_book(book: Annotated[BooksGet, Depends()]) -> BookId:
 async def get_book() -> list[BookAdd]:
     try:
         books = await BookRepository.get_all_books()  # Получаем список всех книг
-        logging.info("Получен список всех книг")
+        logging.info("Получен список всех книг от Роутера")
         return books  # Возвращаем список книг
     except Exception as e:
         logging.error(f"Ошибка при получении книг: {e}")

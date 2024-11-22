@@ -36,7 +36,7 @@ class BookRepository:
                 book_models = result.scalars().all()  # Используем scalars() для получения всех результатов
                 book_schemas = [BookAdd.model_validate(book.__dict__) for book in book_models]  # Преобразуем объекты ORM в схемы Pydantic
 
-                logging.info("Все книги получены")
+                logging.info("Все книги получены в репозитории")
                 return book_schemas  # Возвращаем список схем Pydantic
 
             except SQLAlchemyError as e:
