@@ -1,4 +1,3 @@
-from typing import Annotated
 from fastapi import Depends, FastAPI
 from contextlib import asynccontextmanager
 
@@ -20,15 +19,3 @@ app = FastAPI(lifespan=lifespan)
 
 
 bookShelf = []
-
-
-@app.post("/books")
-async def add_book(book: Annotated[BookAdd, Depends()]):
-    bookShelf.append(book)
-    return {"book added": True}
-
-
-# @app.get("/books")
-# def get_book():
-#     book1 = BooksGet(name="123", author="456", description="hfhfhfhfhhf")
-#     return {"data": book1}
